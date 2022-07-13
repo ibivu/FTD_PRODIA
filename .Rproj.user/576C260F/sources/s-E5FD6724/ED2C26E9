@@ -1,0 +1,25 @@
+{
+    "id": "ED2C26E9",
+    "path": "C:/Users/jhmva/surfdrive/PhD/FTD_PRODIA/src/add_uniprot_info.R",
+    "project_path": "src/add_uniprot_info.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1657148782906.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "tempName": "Untitled1",
+        "cursorPosition": "7,29",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1637056681,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1637056681,
+    "read_only": false,
+    "read_only_alternatives": []
+}
