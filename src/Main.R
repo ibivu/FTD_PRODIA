@@ -204,9 +204,105 @@ GOenr.net <- GO.terms.modules(wgcna.net, ids, log2vals, gene.names, entrez.ids, 
 # Save data structures
 save(wgcna.net, GOenr.net, module.significance, gene.names, file='rdata/coexpression.RData')
 
-######### Run hierarchical hotnet to obtain the most significant submodule within each of the identified modules
-######### Note that the HotNet package was written in Python and needs to be intstalled separately on your machine
-system('bash run_hierarchicalHotnet_modules.sh')
+#######################################
+###       Hierarchical HotNet       ###
+#######################################
+### Run hierarchical hotnet to obtain the most significant submodule within each of the identified modules
+### Note that the HotNet package was written in Python and needs to be intstalled separately on your machine
+### HotNet was run mostly with default parameters
+#load(file='rdata/input_data.RData')
+#load(file='rdata/normalized_data.RData')
+#load(file='rdata/differential_expression.RData')
+#load(file='rdata/coexpression.RData')
+dir.create('figures/hotnet')
+dir.create('output/hotnet')
+
+# Get TOM matrix
+TOM <- TOMsimilarityFromExpr(t(d.norm), power=7)
+
+# Module labels and log2 values
+moduleColors <- labels2colors(wgcna.net$colors)
+modules <- levels(as.factor(moduleColors))
+log2.TAU.con <- d.summary$log2FC_TAU_control
+P.TAU.con <- d.summary$Pvalue_TAU_control
+
+# Get table with interactions for each module
+for (module in modules){
+  print(module)
+  
+  # Select proteins in module
+  inModule <- moduleColors == module
+  sum(inModule)
+  TOMmodule <- TOM[inModule, inModule]
+  idsModule <- ids[inModule]
+  log2ModuleProteins <- log2.TAU.con[inModule]
+  PModuleProteins <- P.TAU.con[inModule]
+  
+  # Convert Uniprot IDs to Gene symbols
+  namesModule <- unlist(lapply(d.summary[idsModule,'Gene.names'], function(x){strsplit(x, split=' ')[[1]][1]}))
+  for (i in 1:length(namesModule)){
+    # If there is no gene name associated with the Uniprot ID, keep the uniprot ID
+    if (is.na(namesModule[i])){
+      namesModule[i] <- idsModule[i]
+    }
+  }
+  node.frame <- data.frame(ID=idsModule, LogFC=log2ModuleProteins, Pvalue=PModuleProteins, Symbol=namesModule)
+  rownames(node.frame) <- 1:nrow(node.frame)
+  write.table(node.frame, file=paste0('output/hotnet/nodes_', module, '.tsv'), col.names=TRUE, row.names=TRUE, sep='\t', quote=FALSE)
+  names(namesModule) <- idsModule
+  
+  write.table(node.frame[, c('Symbol', 'LogFC')], file=paste0('output/hotnet/HotNet_input/g2s_log2_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+  
+  #nodeColorsModule <- node.colors[inModule]
+  
+  # Create empty dataframes
+  edges.matrix.1 <- data.frame(matrix(nrow=0, ncol=2))
+  edges.matrix.2 <- data.frame(matrix(nrow=0, ncol=2))
+  edges.matrix.1.num <- data.frame(matrix(nrow=0, ncol=2))
+  edges.matrix.2.num <- data.frame(matrix(nrow=0, ncol=2))
+  i2g.1 <- data.frame(matrix(nrow=0, ncol=2))
+  i2g.2 <- data.frame(matrix(nrow=0, ncol=2))
+  
+  # Write tables: one with edges between all nodes, one with a treshold of 0.05 and one with custom thresholds
+  for (i in 1:(nrow(TOMmodule)-1)){
+    #print(i)
+    for (j in (i+1):nrow(TOMmodule)){
+      if (TOMmodule[i,j] > 0.03){
+        # Add edge to list
+        edges.matrix.1[nrow(edges.matrix.1)+1,] <- c(namesModule[i],namesModule[j])
+        edges.matrix.1.num[nrow(edges.matrix.1.num)+1,] <- c(i,j)
+        # Add node to node list
+        if (!i %in% i2g.1[,1]){
+          i2g.1[nrow(i2g.1)+1,] <- c(i, namesModule[i])
+        }
+        if (!j %in% i2g.1[,1]){
+          i2g.1[nrow(i2g.1)+1,] <- c(j, namesModule[j])
+        }
+      }
+      if (TOMmodule[i,j] > 0.01){
+        # Add edge to list
+        edges.matrix.2[nrow(edges.matrix.2)+1,] <- c(namesModule[i],namesModule[j])
+        edges.matrix.2.num[nrow(edges.matrix.2.num)+1,] <- c(i,j)
+        # Add node to node list
+        if (!i %in% i2g.2[,1]){
+          i2g.2[nrow(i2g.2)+1,] <- c(i, namesModule[i])
+        }
+        if (!j %in% i2g.2[,1]){
+          i2g.2[nrow(i2g.2)+1,] <- c(j, namesModule[j])
+        }
+      }
+    }
+  }
+  write.table(edges.matrix.1, file=paste0('output/hotnet/HotNet_input/name_edges_expression_003_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+  write.table(edges.matrix.2, file=paste0('output/hotnet/HotNet_input/name_edges_expression_001_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+  write.table(edges.matrix.1.num, file=paste0('output/hotnet/HotNet_input/edge_list_003_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+  write.table(edges.matrix.2.num, file=paste0('output/hotnet/HotNet_input/edge_list_001_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+  write.table(i2g.1, file=paste0('output/hotnet/HotNet_input/i2g_003_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+  write.table(i2g.2, file=paste0('output/hotnet/HotNet_input/i2g_001_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
+}
+
+system('bash src/run_hierarchicalHotnet_modules.sh')
+
 
 #######################################
 ###          Validation             ###
