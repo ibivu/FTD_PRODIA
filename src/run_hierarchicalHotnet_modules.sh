@@ -29,7 +29,7 @@ mkdir -p $results
 ### Set parameters
 modules=(black blue brown cyan green greenyellow grey grey60 lightcyan magenta midnightblue pink purple  red  salmon tan turquoise yellow)
 thresholds=(001 003)
-methods=log2
+methods=(Pval)
 num_permutations=100
 : '
 ### Run procedure on full dataset

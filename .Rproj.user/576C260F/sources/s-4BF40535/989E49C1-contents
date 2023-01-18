@@ -208,7 +208,8 @@ save(wgcna.net, GOenr.net, module.significance, gene.names, file='rdata/coexpres
 ###       Hierarchical HotNet       ###
 #######################################
 ### Run hierarchical hotnet to obtain the most significant submodule within each of the identified modules
-### Note that the HotNet package was written in Python and needs to be intstalled separately on your machine
+### NOTE the HotNet package was written in Python and needs to be intstalled separately on your machine. Follow
+### the installation instructions on https://github.com/raphael-group/hierarchical-hotnet
 ### HotNet was run mostly with default parameters
 #load(file='rdata/input_data.RData')
 #load(file='rdata/normalized_data.RData')
@@ -248,11 +249,12 @@ for (module in modules){
   }
   node.frame <- data.frame(ID=idsModule, LogFC=log2ModuleProteins, Pvalue=PModuleProteins, Symbol=namesModule)
   rownames(node.frame) <- 1:nrow(node.frame)
+  node.frame$InvPvalue <- 1 - PModuleProteins
   write.table(node.frame, file=paste0('output/hotnet/nodes_', module, '.tsv'), col.names=TRUE, row.names=TRUE, sep='\t', quote=FALSE)
   names(namesModule) <- idsModule
   
   write.table(node.frame[, c('Symbol', 'LogFC')], file=paste0('output/hotnet/HotNet_input/g2s_log2_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
-  
+  write.table(node.frame[, c('Symbol', 'InvPvalue')], file=paste0('output/hotnet/HotNet_input/g2s_Pval_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
   #nodeColorsModule <- node.colors[inModule]
   
   # Create empty dataframes
@@ -263,7 +265,7 @@ for (module in modules){
   i2g.1 <- data.frame(matrix(nrow=0, ncol=2))
   i2g.2 <- data.frame(matrix(nrow=0, ncol=2))
   
-  # Write tables: one with edges between all nodes, one with a treshold of 0.05 and one with custom thresholds
+  # Write tables: one with edges between all nodes, one with a threshold of 0.03, and one with a more lenient threshold of 0.01
   for (i in 1:(nrow(TOMmodule)-1)){
     #print(i)
     for (j in (i+1):nrow(TOMmodule)){
@@ -301,6 +303,8 @@ for (module in modules){
   write.table(i2g.2, file=paste0('output/hotnet/HotNet_input/i2g_001_', module, '.tsv'), col.names=FALSE, row.names=FALSE, sep='\t', quote=FALSE)
 }
 
+# Run Hierarchical HotNet (note this will take some time)
+# In the bash script, modify the location of the "scripts" parameter to the src location of your hotnet installation before running
 system('bash src/run_hierarchicalHotnet_modules.sh')
 
 
@@ -493,7 +497,7 @@ for(m in modules){
 #load(file='rdata/differential_expression.RData')
 #load(file='rdata/coexpression.RData')
 d.norm <- t(d.norm)
-moduleColors <- labels2colors(net.norm$colors)
+moduleColors <- labels2colors(wgcna.net$colors)
 
 d.array <- data.frame(matrix(nrow=5, ncol=18))
 colnames(d.array) <- labels2colors(0:17)
