@@ -524,3 +524,14 @@ for (i in 0:17){
 }
 write.table(d.array, file='module_heatmap.tsv', sep='\t', quote=FALSE, row.names=TRUE, col.names=TRUE)
 write.table(t(pval.modules.norm), file='module_pval.tsv', sep='\t', quote=FALSE, row.names=TRUE, col.names=TRUE)
+
+#######################################
+###      Cell-type enrichment       ###
+#######################################
+### Code for cell-type enrichment was written by Suzanne Miedema
+### Note that EWCE requires installation of additional R packages
+# Create output directories
+dir.create('figures/EWCE')
+dir.create('output/EWCE')
+
+source('src/EWCE_analysis.r')
