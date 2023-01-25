@@ -1,5 +1,11 @@
-### Perform cell type enrichment analysis on the identified modules
-### Code written by Suzanne Miedema
+#######################################
+###      Cell-type enrichment       ###
+#######################################
+### Code for cell-type enrichment was written by Suzanne Miedema
+### Note that EWCE requires installation of additional R packages
+# Create output directories
+dir.create('figures/EWCE')
+dir.create('output/EWCE')
 
 library(readr)
 library(readxl)
@@ -39,7 +45,7 @@ library(limma)
 # annotLevel.Lake <- list(l1=ct.Lake$Celltype)
 # ct.Lake_data <- generate.celltype.data(exp=mat.Lake, annotLevels = annotLevel.Lake,
 #                                        groupName = "Lake", no_cores=1)
-load("Helpen eind dec 2020/CellTypeData_Lake.rda")
+load("data/CellTypeData_Lake.rda")
 
 # specificity.Lake <- rownames_to_column(data.frame(ctd[[1]][["specificity"]]), "Genes")
 # write_csv(specificity.Lake, "EWCE_Lake_specificitymatrix.csv")
@@ -60,7 +66,10 @@ hits.prodia.tau.DOWN <- filter(hits.prodia.tau, hits.prodia.tau$log2FC_TAU_contr
 # LET OP: zorg dat de juiste ctd data in je environment staat (in dit geval Lake data)!
 res.prodia.tau <- bootstrap.enrichment.test(sct_data=ctd, hits=hits.prodia.tau$HGNC_symbol, annotLevel=1,
                                       bg=bg.prodia.tau$HGNC_symbol, genelistSpecies="human",
-                                      sctSpecies="human", reps=20000)
+                                      sctSpecies="human", reps=20000) #, 
+#res.prodia.tau <- bootstrap.enrichment.test(sct_data=ctd, human.hits=hits.prodia.tau$HGNC_symbol, #annotLevel=1,
+#                                            human.bg=bg.prodia.tau$HGNC_symbol, geneSizeControl=TRUE, #genelistSpecies="human",
+#                                            reps=20000) #, sctSpecies="human"
 
 # EWCE ON ALL SIGN GENES (UP vs DOWN)
 # (guidelines say >10.000 reps for publishing)

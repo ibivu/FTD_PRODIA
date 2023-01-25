@@ -1,0 +1,24 @@
+{
+    "id": "D04D6A8D",
+    "path": "C:/Users/jhmva/surfdrive/PhD/FTD_PRODIA/src/run_hierarchicalHotnet_modules.sh",
+    "project_path": "src/run_hierarchicalHotnet_modules.sh",
+    "type": "sh",
+    "hash": "3188402663",
+    "contents": "",
+    "dirty": false,
+    "created": 1674651821791.0,
+    "source_on_save": false,
+    "relative_order": 10,
+    "properties": {
+        "cursorPosition": "26,1",
+        "scrollLine": "12"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1674651847,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1674651847507,
+    "read_only": false,
+    "read_only_alternatives": []
+}

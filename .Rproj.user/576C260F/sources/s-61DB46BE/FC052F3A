@@ -1,0 +1,32 @@
+{
+    "id": "FC052F3A",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1674238798187.0,
+    "source_on_save": false,
+    "relative_order": 9,
+    "properties": {
+        "expression": "hits.prodia.tau",
+        "caption": "hits.prodia.tau",
+        "totalObservations": 288,
+        "displayedObservations": 288,
+        "variables": 2,
+        "cacheKey": "DE47BCCB",
+        "object": "hits.prodia.tau",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=hits.prodia.tau&cache_key=DE47BCCB&max_cols=50",
+        "preview": 0
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1674231353,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1674238798187,
+    "read_only": false,
+    "read_only_alternatives": []
+}
